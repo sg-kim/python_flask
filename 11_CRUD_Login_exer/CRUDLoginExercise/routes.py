@@ -11,15 +11,12 @@ def home():
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-	print('register()')
 	if current_user.is_authenticated:
 		return redirect(url_for('home'))
 	form = registrationForm()
-	print(form.username.data, form.email.data, form.password.data, form.validate_on_submit())
 	if form.validate_on_submit():
-		print('register.validate_on_submit()')
 		hashedPassword = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-		user = User(username = form.username.data, email = form.email.data, password = hashedPassowrd)
+		user = User(username = form.username.data, email = form.email.data, password = hashedPassword)
 		db.session.add(user)
 		db.session.commit()
 		return redirect(url_for('home'))

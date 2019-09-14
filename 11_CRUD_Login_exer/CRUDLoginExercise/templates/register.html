@@ -5,10 +5,24 @@
 		<div>
 		{{form.username.label}}
 		{{form.username}}
+		{%if form.username.errors%}
+			<div>
+				{%for error in form.username.errors%}
+					<span>{{error}}</span>
+				{%endfor%}
+			</div>
+		{%endif%}
 		</div>
 		<div>
 		{{form.email.label}}
 		{{form.email}}
+		{%if form.email.errors%}
+			<div>
+				{%for error in form.email.errors%}
+					<span>{{error}}</span>
+				{%endfor%}
+			</div>
+		{%endif%}
 		</div>
 		<div>
 		{{form.password.label}}
