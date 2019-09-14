@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	{%if title%}
+		<title>CRUD Login exercise - {{title}}</title>
+	{%else%}
+		<title>CRUD Login exercise</title>
+	{%endif%}
+</head>
+<body>
+	<div>
+		{%if current_user.is_authenticated%}
+			<a href="{{url_for('logout')}}">Logout</a>
+		{%else%}
+			<a href="{{url_for('login')}}">Login</a>
+			<a href="{{url_for('register')}}">Register</a>
+		{%endif%}
+	</div>
+	<div>
+		{%if current_user.is_authenticated%}
+			<h2>Welcome! {{current_user.username}}</h2>
+		{%else%}
+			<h2>Welcome! Please login</h2>
+		{%endif%}
+	</div>
+	{%block content%}
+	{%endblock content%}
+</body>
+</html>
+
