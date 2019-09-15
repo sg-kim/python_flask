@@ -1,3 +1,4 @@
+from datetime import datetime
 from CRUDLoginExercise import db, login_manager
 from flask_login import UserMixin
 
@@ -10,4 +11,11 @@ class User(db.Model, UserMixin):
 	username = db.Column(db.String(20), unique = True, nullable = False)
 	email = db.Column(db.String(50), unique = True, nullable = False)
 	password = db.Column(db.String(60), nullable = False)
+
+class Post(db.Model):
+	id = db.Column(db.Integer, primary_key = True)
+	author = db.Column(db.String(20), unique = True, nullable = False)
+	title = db.Column(db.String(50), nullable = False)
+	content = db.Column(db.Text, nullable = False)
+	datePosted = db.Column(db.DateTime, nullable = False, default=datetime.utcnow)
 

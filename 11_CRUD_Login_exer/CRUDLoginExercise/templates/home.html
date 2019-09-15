@@ -1,3 +1,29 @@
 {%extends "layout.html"%}
 {%block content%}
+	{%if post%}
+		<div>
+			{{post.title}}
+		</div>
+		<div>
+			{{post.content}}
+		</div>
+		<div>
+			Posted by {{post.author}} on {{post.datePosted.strftime('%Y-%m-%d')}}
+		</div>
+		{%if post.author == current_user.username%}
+			<div>
+				<a href="{{url_for('updatePost', postId = post.id)}}">Edit</a>
+			<div>
+			<div>
+				<a href="{{url_for('deletePost', postId = post.id)}}">Delete</a>
+			<div>
+		{%endif%}
+		<br/>
+	{%endif%}
+	{%for post in posts %}
+		<div>
+			<a href="{{url_for('homeWithPost', postId = post.id)}}">{{post.title}}</a>
+		</div>
+	{%endfor%}
 {%endblock content%}
+

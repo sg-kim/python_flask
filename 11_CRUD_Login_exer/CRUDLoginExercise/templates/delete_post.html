@@ -1,0 +1,18 @@
+{%extends "layout.html"%}
+{%block content%}
+	<form method="POST" action="">
+		{{form.hidden_tag()}}
+		<div>
+			{{post.title}}
+		</div>
+		<div>
+			{{post.content}}
+		</div>
+		<div>
+			Confirm deletion?
+		</div>
+		<div>
+			{{form.submit}}
+		</div>
+	</form>
+{%endblock content%}
