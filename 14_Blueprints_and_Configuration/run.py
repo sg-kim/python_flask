@@ -3,5 +3,5 @@ from DBwithFlaskPackage import create_app
 app = create_app()
 
 if __name__ == "__main__":
-	app.run('172.18.2.46')
+	app.run('192.168.172.75')
 

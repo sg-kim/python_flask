@@ -4,8 +4,6 @@ from DBwithFlaskPackage import db
 from DBwithFlaskPackage.models import Post
 from DBwithFlaskPackage.posts.forms import PostForm
 
-from flask import Blueprint
-
 posts = Blueprint('posts', __name__)
 
 @posts.route("/post/new", methods=['GET', 'POST'])
