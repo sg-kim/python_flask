@@ -1,4 +1,5 @@
-from flask import render_template, Blueprint, request
+from flask import render_template, Blueprint, request, session
+from cookieAndSession.models import FlaskSession
 from cookieAndSession import db
 
 main = Blueprint('main', __name__)
@@ -6,9 +7,6 @@ main = Blueprint('main', __name__)
 @main.route("/")
 @main.route("/home")
 def	home():
-	if not FlaskSession.query.all()
-		db.create_all()
-
 	session['username'] = 'Lisa'
 
 	return 'session이 만들어졌습니다.'

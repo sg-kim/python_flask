@@ -3,7 +3,10 @@ from werkzeug.datastructures import CallbackDict
 from flask.sessions import SessionInterface, SessionMixin
 import pickle
 from uuid import uuid4
+from cookieAndSession import db
 from cookieAndSession.models import FlaskSession
+from sqlalchemy import create_engine
+from cookieAndSession.config import Config
 
 class SQLAlchemySession(CallbackDict, SessionMixin):
 	def __init__(self, initial = None, sid = None, new = False):
@@ -13,6 +16,14 @@ class SQLAlchemySession(CallbackDict, SessionMixin):
 		self.sid = sid
 		self.new = new
 		self.modified = False
+	
+		engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+
+		if not engine.dialect.has_table(engine, 'flask_session'):
+				db.create_all()
+				print('table for session is created.')
+
+		engine.dispose()
 
 class SQLAlchemySessionInterface(SessionInterface):
 	session_class = SQLAlchemySession
@@ -27,7 +38,7 @@ class SQLAlchemySessionInterface(SessionInterface):
 			sid = self.generate_sid()
 			return self.session_class(sid = sid, new = True)
 
-		rec = db.query(FlaskSession).filter(FlaskSession.sid == sid).first()
+		rec = db.session.query(FlaskSession).filter(FlaskSession.sid == sid).first()
 
 		if rec is not None:
 			data = self.serializer.loads(rec.value)
@@ -36,23 +47,23 @@ class SQLAlchemySessionInterface(SessionInterface):
 		return self.session_class(sid = sid, new = True)
 
 	def save_session(self, app, session, response):
-		domain  = self.get_cookie_domain(app)
+		domain = self.get_cookie_domain(app)
 		if not session:
-			rec = db.query(FlaskSession).filter(FlaskSession.sid == session.sid).first()
-			db.delete(rec)
-			db.commit()
+			rec = db.session.query(FlaskSession).filter(FlaskSession.sid == session.sid).first()
+			db.session.delete(rec)
+			db.session.commit()
 			if session.modified:
-				make_response.delete_cookie(app.session_cookie_name, domain = domain)
+				response.delete_cookie(app.session_cookie_name, domain = domain)
 			return
 		val = self.serializer.dumps(dict(session))
 		session_db = FlaskSession.change(session.sid, val)
-		db.add(session_db)
-		db.commit()
+		db.session.add(session_db)
+		db.session.commit()
 
 		httponly = self.get_cookie_httponly(app)
 		secure = self.get_cookie_secure(app)
 		expires = self.get_expiration_time(app, session)
 
-		make_response.set_cookie(app.session_cookie_name, session.sid, expires = expires, httponly = httponly, domain = domain, secure = secure)
+		response.set_cookie(app.session_cookie_name, session.sid, expires = expires, httponly = httponly, domain = domain, secure = secure)
 
 

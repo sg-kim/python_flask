@@ -2,12 +2,12 @@ from cookieAndSession import db
 
 class FlaskSession(db.Model):
 
-	sid = db.Column(String, primary_key = True)
-	value = db.Column(BLOB)
+	sid = db.Column(db.String(36), primary_key = True)
+	value = db.Column(db.LargeBinary)
 
 	@classmethod
 	def change(cls, sid, value):
-		rec = db.query(cls).filter(cls.sid == sid).first()
+		rec = db.session.query(cls).filter(cls.sid == sid).first()
 		if not rec:
 			rec = cls()
 			rec.sid = sid
