@@ -11,6 +11,7 @@ from cookieAndSession.config import Config
 class SQLAlchemySession(CallbackDict, SessionMixin):
 	def __init__(self, initial = None, sid = None, new = False):
 		def on_update(self):
+			print('SQLAlchemySession.on_update')
 			self.modified = True
 		CallbackDict.__init__(self, initial, on_update)
 		self.sid = sid
@@ -20,8 +21,8 @@ class SQLAlchemySession(CallbackDict, SessionMixin):
 		engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 
 		if not engine.dialect.has_table(engine, 'flask_session'):
-				db.create_all()
-				print('table for session is created.')
+			db.create_all()
+			print('table for session is created.')
 
 		engine.dispose()
 
@@ -35,26 +36,33 @@ class SQLAlchemySessionInterface(SessionInterface):
 	def open_session(self, app, request):
 		sid = request.cookies.get(app.session_cookie_name)
 		if not sid:
+			print('SQLAlchemySessionInterface.open_session.if_not_sid')
 			sid = self.generate_sid()
 			return self.session_class(sid = sid, new = True)
 
 		rec = db.session.query(FlaskSession).filter(FlaskSession.sid == sid).first()
 
 		if rec is not None:
+			print('SQLAlchemySessionInterface.open_session.if_rec_is_not_None')
 			data = self.serializer.loads(rec.value)
 			return self.session_class(data, sid = sid)
+		
+		print('SQLAlchemySessionInterface.open_session')
 
 		return self.session_class(sid = sid, new = True)
 
 	def save_session(self, app, session, response):
 		domain = self.get_cookie_domain(app)
 		if not session:
+			print('SQLAlchemySessionInterface.save_session.if_not_session')
 			rec = db.session.query(FlaskSession).filter(FlaskSession.sid == session.sid).first()
-			db.session.delete(rec)
-			db.session.commit()
+			if rec is not None:
+				db.session.delete(rec)
+				db.session.commit()
 			if session.modified:
 				response.delete_cookie(app.session_cookie_name, domain = domain)
 			return
+		print('SQLAlchemySessionInterface.save_session')
 		val = self.serializer.dumps(dict(session))
 		session_db = FlaskSession.change(session.sid, val)
 		db.session.add(session_db)
